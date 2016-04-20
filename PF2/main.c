@@ -1,3 +1,4 @@
+#include <string>
 #include <iostream>
 #include <fstream>
 #include "nr3.h"
@@ -113,22 +114,29 @@ int main() {
 	cout << "X vector: " << endl;
 
 	ofstream myfile;
-	myfile.open ("results.csv");
+
+	std::ostringstream ss;
+	ss << "results_" << n << ".csv";
+
+	myfile.open ( ss.str() );
 	myfile << "x:,";
 
 	for(int i = 0; i < Npoints; i++){
-		myfile << a+(i*h) << ",";
+		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
+			myfile << a+(i*h) << ",";
 	}
 	myfile << endl;
 
 	myfile << "u(x),";
 	for(int i = 0; i < Npoints; i++){
+		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
 			myfile << X[i] << ",";
 	}
 	myfile << endl;
-	myfile << "v(x),";
+	myfile << "v(y),";
 
 	for(int i = 0; i < Npoints; i++){
+		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
 			myfile << X[Npoints+i] << ",";
 	}
 	myfile.close();
