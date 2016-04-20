@@ -1,0 +1,170 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{multicol}
+\author{Mathias Neerup}
+\title{Numerical methods - Mandatory 2}
+\author{Mathias Neerup}
+\date{2016 April 17}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\section{Excercise A}
+Use the trapezoidal method to write an approximation to eq. \ref{eq:Integral3}, \ref{eq:Integral4}. Then write the discrete problem corresponding to eq. \ref{eq:Integral1}, \ref{eq:Integral2} as a system of linear equations in the variables $(u_i)^N_i=0$ and $(v_i)^N_i=0$ \\
+\\
+Equation 1 and 2 can be seen below: 
+\begin{align}
+	u(x) = \epsilon_{1}  \sigma T^{4}_ {1}+(1-\epsilon_{1})\int_{-\frac{1}{2}w}^{\frac{1}{2}w} F(x,y,d)v(y) dy \label{eq:Integral1} \\
+	v(y) = \epsilon_{2}  \sigma T^{4}_ {2}+(1-\epsilon_{1})\int_{-\frac{1}{2}w}^{\frac{1}{2}w} F(x,y,d)u(x) \label{eq:Integral2} dx
+\end{align}
+
+Equation 3 and 4 can be seen below: 
+\begin{align}
+	I_1(x) = \int_{-\frac{1}{2}w}^{\frac{1}{2}w} F(x,y,d)v(y) dy \label{eq:Integral3} \\
+	I_2(y) = \int_{-\frac{1}{2}w}^{\frac{1}{2}w} F(x,y,d)u(x) \label{eq:Integral4} dx
+\end{align}
+
+The generel equation of the trapezoidal method:
+\begin{equation}
+\int_{a}^{b}f(x) dx  \approx \frac{h}{2} \sum_{k=1}^{N}(f(x_{k}+f(x_{k+1})))
+\end{equation}
+
+Where h is equal to:
+\begin{equation}
+h=\frac{b-a}{N}
+\end{equation}
+
+When the trapezoidal method is applied to eq. \ref{eq:Integral1} and \ref{eq:Integral2}:
+\begin{align}
+I_{1} =  \frac{h}{2} \sum_{k=1}^{N}( F(x,y_{k},d)v(y_{k}) + F(x,y_{k+1},d)v(y_{k+1})) \\
+I_{2} =  \frac{h}{2} \sum_{k=1}^{N}( F(x_{k},y,d)u(x_{k}) + F(x_{k+1},y,d)u(x_{k+1}))
+\end{align}
+
+Introduce $\beta_{1,2}$ and $\beta_{1,2}$ as constants.
+
+\begin{multicols}{2}
+  \begin{equation*}
+	\alpha_{1} = \epsilon_{1}  \sigma T^{4}_ {1} 
+  \end{equation*}
+\break
+  \begin{equation*}
+  	\alpha_{2} = 1 - \epsilon_{1}
+  \end{equation*}
+\end{multicols}
+\begin{multicols}{2}
+  \begin{equation*}
+  	\beta_{1} = \epsilon_{2}  \sigma T^{4}_ {2}
+  \end{equation*}
+\break
+  \begin{equation*}
+  	\beta_{2} = 1 - \epsilon_{2}
+  \end{equation*}
+\end{multicols}
+Rearrangen eq. \ref{eq:Integral1}, \ref{eq:Integral2} to fit into $A\overrightarrow{x}=\overrightarrow{b}$
+\begin{align}
+u(x) - \alpha_{2}\int_{-\frac{1}{2}w}^{\frac{1}{2}w} F(x,y,d)v(y) dy = \alpha_1  \\
+v(y) - \beta_{2}\int_{-\frac{1}{2}w}^{\frac{1}{2}w} F(x,y,d)u(x) dx = \beta_{1} 
+\end{align}
+Setting eq. \ref{eq:Integral1}, \ref{eq:Integral2} together with eq. \ref{eq:Integral3}, \ref{eq:Integral4}
+
+\begin{align}
+u(x) - \alpha_{2} \frac{h}{2} \sum_{k=1}^{N}( F(x,y_{k},d)v(y_{k}) + F(x,y_{k+1},d)v(y_{k+1})) = \alpha_{1} \\
+v(y) - \beta_{2}  \frac{h}{2} \sum_{k=1}^{N}( F(x_{k},y,d)u(x_{k}) + F(x_{k+1},y,d)u(x_{k+1})) = \beta_{1}
+\end{align}
+
+If $N=1$
+\begin{align}
+u(x)-\alpha_{2}\frac{h}{2}F(x,a,d)v(a)+\alpha_{2}\frac{h}{2}F(x,b,d)v(y_{b}) = \alpha_{1} \\
+v(y)-\beta_{2}\frac{h}{2}F(a,y,d)u(a)+\beta_{2}\frac{h}{2}F(b,y,d)u(b) = \beta_{1}
+\end{align}
+
+Expressed as matrices for $N=2$
+
+\begin{align}
+A = 
+ \begin{smallmatrix}
+  1 & 0 & 0 & -\alpha_{2}\frac{h}{2}F(x_{1},y_{1},d) & -\alpha_{2}hF(x_{1},y_{2},d)  & -\alpha_{2}\frac{h}{2}F(x_{1},y_{3},d) \\  
+  0 & 1 & 0 & -\alpha_{2}\frac{h}{2}F(x_{2},y_{1},d) & -\alpha{2}hF(x_{2},y_{2},d)  & -\alpha{2}\frac{h}{2}F(x_{2},y_{3},d) \\
+  0 & 0 & 1 & -\alpha_{2}\frac{h}{2}F(x_{3},y_{1},d) & -\alpha{2}hF(x_{3},y_{2},d)  & -\alpha{2}\frac{h}{2}F(x_{3},y_{3},d) \\
+  -\beta_{2}\frac{h}{2}F(x_{1},y_{1},d)  & -\beta_{2}hF(x_{2},y_{1},d)  & -\beta_{2}\frac{h}{2}F(x_{3},y_{1},d)  & 1 & 0 & 0  \\
+  -\beta_{2}\frac{h}{2}F(x_{1},y_{2},d)  & -\beta_{2}hF(x_{2},y_{2},d)  & -\beta_{2}\frac{h}{2}F(x_{3},y_{2},d)  & 0 & 1 & 0  \\
+  -\beta_{2}\frac{h}{2}F(x_{1},y_{3},d)  & -\beta_{2}hF(x_{2},y_{3},d)  & -\beta_{2}\frac{h}{2}F(x_{3},y_{3},d)  & 0 & 0 & 1 
+ \end{smallmatrix} 
+\end{align} 
+
+\begin{multicols}{2}
+  \null \vfill
+	\begin{align*}
+		\overrightarrow{b} = \begin{bmatrix}
+			\alpha_{1} \\
+			\alpha_{1} \\
+			\alpha_{1} \\
+			\beta_{1} \\
+			\beta_{1} \\
+			\beta_{1}
+		\end{bmatrix}
+	\end{align*}
+\break
+  \vfill \null    
+	\begin{align*}
+		\overrightarrow{x} = \begin{bmatrix}
+  			u(x_1) \\
+  			u(x_2) \\
+  			u(x_3) \\
+  			v(y_1) \\
+  			v(y_2) \\
+  			v(y_3)
+ 	 	\end{bmatrix}
+	\end{align*}
+\end{multicols}
+
+
+The A-matrix will always be diagonally 1 since it's selecting one element in vector X to be substracted from. Due to the layout of vector X, all steps from equation 11 will be in the upper right quadrant while all steps from equation 12 will be in the lower left quadrant.
+
+The size of matrix A is $n=m=2(N+1)$. This is due to the trapezoidal method since when the sum runs, it creates N+1 columns which happens for both equations there by multiply by two.
+
+\begin{align}
+A = 
+ \begin{bmatrix}
+  1 & 0 & -\alpha_{2}\frac{h}{2}F(x_{1},y_{1},d) & -\alpha_{2}\frac{h}{2}F(x_{1},y_{2},d) \\
+  0 & 1 & -\alpha_{2}\frac{h}{2}F(x_{2},y_{1},d) & -\alpha{2}\frac{h}{2}F(x_{2},y_{2},d) \\
+  -\beta_{2}\frac{h}{2}F(x_{1},y_{1},d)  & -\beta_{2}\frac{h}{2}F(x_{2},y_{1},d)  & 1 & 0  \\
+  -\beta_{2}\frac{h}{2}F(x_{1},y_{2},d)  & -\beta_{2}\frac{h}{2}F(x_{2},y_{2},d)  & 0 & 1 
+ \end{bmatrix} 
+\end{align} 
+
+
+
+\begin{multicols}{2}
+  \null \vfill
+	\begin{align*}
+		\overrightarrow{b} = \begin{bmatrix}
+			\alpha_{1} \\
+			\alpha_{1} \\
+			\beta_{1} \\
+			\beta_{1}
+		\end{bmatrix}
+	\end{align*}
+\break
+  \vfill \null    
+	\begin{align*}
+		\overrightarrow{x} = \begin{bmatrix}
+  			u(a) \\
+  			u(b) \\
+  			v(a) \\
+  			v(b) \\
+ 	 	\end{bmatrix}
+	\end{align*}
+\end{multicols}
+
+
+
+\section{Excercise B}
+\section{Excercise C}
+
+\end{document}
