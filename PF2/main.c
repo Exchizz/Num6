@@ -28,10 +28,28 @@ double F(double x, double y, double d_param){
 	return 1.0/( 2* pow( d_param*d_param+ pow(x-y,2) ,1.5) );
 }
 
+double Q( VecDoub & X, double a, double b , int N, int offset, double k1, double k2){
+
+	double h = (b-a)/N;
+	int Npoints = N + 1;
+
+	double sum = 0;
+
+	int divisor = 0;
+	for( int elm = 0; elm < Npoints; elm++){
+		divisor = (elm == 0 || elm == (Npoints-1)) ? 2 : 1;
+		sum += (h/divisor)*(X[offset + elm] - ((k1-X[offset + elm])/-k2));
+	}
+	return sum;
+}
 
 
 
 int main(int argc, char** argv) {
+
+	std::cout  << "alpha 1: " << ALPHA1 << std::endl;
+	std::cout  << "alpha 2: " << ALPHA2 << std::endl;
+
 	// Number of trapetz
 	int n = atoi(argv[1]);
 	if(argv[1] == ""){
@@ -39,16 +57,15 @@ int main(int argc, char** argv) {
 		n=4;
 	}
 
-
-	std::cout << "n: " << n << std::endl;
-
 	// numper of points
 	int Npoints = n + 1;
 
+	/* Define integral limits */
 	double a = -0.5;
 	double b = 0.5;
 
-	double h =(b-a)/n;
+	/* Define stepsize */
+	double h = (b-a)/n;
 
 	/* Create Matrix A */
 	MatDoub A(2*Npoints,2*Npoints);
@@ -82,7 +99,6 @@ int main(int argc, char** argv) {
 	for(int row = 0; row < Npoints; row++){
 		for(int col = Npoints; col < 2*Npoints; col++){
 			divisor = (y == a || y == b) ? 2 : 1;
-			std::cout << "divisor: " << divisor << std::endl;
 			A[row][col] = -ALPHA2*(h/divisor)*F(x,y,d);
 			y+=h;
 		}
@@ -90,6 +106,7 @@ int main(int argc, char** argv) {
 		x+=h;
 	}
 
+	/* Reset variables */
 	x = a;
 	y = a;
 
@@ -104,30 +121,19 @@ int main(int argc, char** argv) {
 		y+=h;
 	}
 
-	cout << "A Matrix: " << endl;
-	A.print();
-
+	/* Solve linear system of equations */
         SVD svd(A);
         svd.solve(B,X);
 
-	cout << "B vector: " << endl;
-	B.print();
-
-	cout << "X vector: " << endl;
-
+	/* Create file objects */
 	ofstream u_x_file;
 	ofstream v_y_file;
 
-	u_x_file.open ( "results_u_x.csv", ios::app );
-	v_y_file.open ( "results_v_y.csv", ios::app );
-//	u_x_file << "N  &  -0.5    & -0.25   & 0       & 0.25    & 0.5     &  \\ \cline{1-6}" << std::endl;
+	/* Open files for tex files */
+	u_x_file.open ( "results_u_x.tex", ios::app );
+	v_y_file.open ( "results_v_y.tex", ios::app );
 
-//	for(int i = 0; i < Npoints; i++){
-//		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
-//			u_x_file << ".< & . & . & . & . & . &  \\ \cline{1-6}"";
-//	}
-//	u_x_file << endl;
-
+	/* Write contents of X to two seperate files*/
 	u_x_file << n << " & ";
 	for(int i = 0; i < Npoints; i++){
 		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
@@ -141,6 +147,16 @@ int main(int argc, char** argv) {
 	}
 	v_y_file << "\\\\ \\cline{1-6}" << std::endl;
 
+	/* Close files */
 	v_y_file.close();
 	u_x_file.close();
+
+	/* Calculate Q1 from first Npoints */
+	double q1 = Q(X, a, b, n, 0, ALPHA1, ALPHA2);
+
+	/* Calculate Q2 from rest Npoints */
+	double q2 = Q(X, a, b, n, Npoints, BETA1, BETA2);
+
+	std::cout << "Q1: " << q1 << std::endl;
+	std::cout << "Q2: " << q2 << std::endl;
 }
