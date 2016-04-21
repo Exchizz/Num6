@@ -143,17 +143,11 @@ int main(int argc, char** argv) {
 		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
 			u_x_file << X[i] << " & ";
 	}
-	u_x_file << "\\\\ \\cline{1-6}" << std::endl;
 	v_y_file << n << " & ";
 	for(int i = 0; i < Npoints; i++){
 		if(a+(i*h) == a || a+(i*h) == -0.25 || a+(i*h) == 0 || a+(i*h) == 0.25 || a+(i*h) == b )
 			v_y_file << X[Npoints+i] << " & ";
 	}
-	v_y_file << "\\\\ \\cline{1-6}" << std::endl;
-
-	/* Close files */
-	v_y_file.close();
-	u_x_file.close();
 
 	/* Calculate Q1 from first Npoints */
 	double q1 = Q(X, a, b, n, 0, ALPHA1, ALPHA2);
@@ -162,5 +156,18 @@ int main(int argc, char** argv) {
 	double q2 = Q(X, a, b, n, Npoints, BETA1, BETA2);
 
 	std::cout << "Q1: " << q1 << std::endl;
-	std::cout << "Q2: " << q2 << std::endl;
+//	std::cout << "Q2: " << q2 << std::endl;
+	v_y_file << q1;
+//	v_y_file << q2 << " & ";
+
+//	u_x_file << q1 << " & ";
+	u_x_file << q2;
+
+	u_x_file << "\\\\ \\hline" << std::endl;
+	v_y_file << " \\\\ \\hline" << std::endl;
+	/* Close files */
+	v_y_file.close();
+	u_x_file.close();
+
+
 }
