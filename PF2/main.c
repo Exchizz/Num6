@@ -51,6 +51,10 @@ int main(int argc, char** argv) {
 	std::cout  << "alpha 2: " << ALPHA2 << std::endl;
 
 	// Number of trapetz
+	if(argc == 1){
+		std::cout << "HOWTO: <filename> <N>" << std::endl;
+		return 1;
+	}
 	int n = atoi(argv[1]);
 	if(argv[1] == ""){
 		std::cout << "default N = 4";
